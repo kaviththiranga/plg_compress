@@ -22,7 +22,7 @@ class plgSystemCompress extends JPlugin
 
     }
 
-    function onBeforeRender()
+    function onBeforeCompileHead()
     {
 
     }

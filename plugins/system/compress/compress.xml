@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="2.5" type="plugin" group="system">
+<install version="2.5" type="plugin" group="system">
     <name>plg_system_compress</name>
     <author>Joomla! Project</author>
     <creationDate>August 2012</creationDate>
@@ -21,10 +21,20 @@
         <fields name="params">
 
             <fieldset name="basic">
-                <field	name="compression" type="radio"
+                <field	name="jscompression" type="radio"
                           default="0"
-                          description="PLG_COMPRESS_FIELD_COMPRESSION_DESC"
-                          label="PLG_COMPRESS_FIELD_COMPRESSION_LABEL"
+                          description="PLG_COMPRESS_FIELD_JSCOMPRESSION_DESC"
+                          label="PLG_COMPRESS_FIELD_JSCOMPRESSION_LABEL"
+                        >
+                    <option
+                            value="0">JNo</option>
+                    <option
+                            value="1">JYes</option>
+                </field>
+                <field	name="csscompression" type="radio"
+                          default="0"
+                          description="PLG_COMPRESS_FIELD_CSSCOMPRESSION_DESC"
+                          label="PLG_COMPRESS_FIELD_CSSCOMPRESSION_LABEL"
                         >
                     <option
                             value="0">JNo</option>
@@ -35,4 +45,4 @@
 
         </fields>
     </config>
-</extension>
+</install>
