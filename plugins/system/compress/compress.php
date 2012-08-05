@@ -17,12 +17,9 @@ class plgSystemCompress extends JPlugin
         //Set the language in the class
         $config = JFactory::getConfig();
         $options = array(
-            'defaultgroup'	=> 'page',
-            'browsercache'	=> $this->params->get('browsercache', false),
-            'caching'		=> false,
+            'compression'	=> $this->params->get('compression', false),
         );
 
-        $this->_cache = JCache::getInstance('page', $options);
     }
 
     function onBeforeRender()

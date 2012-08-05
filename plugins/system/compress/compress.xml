@@ -21,10 +21,10 @@
         <fields name="params">
 
             <fieldset name="basic">
-                <field	name="browsercache" type="radio"
+                <field	name="compression" type="radio"
                           default="0"
-                          description="PLG_CACHE_FIELD_BROWSERCACHE_DESC"
-                          label="PLG_CACHE_FIELD_BROWSERCACHE_LABEL"
+                          description="PLG_COMPRESS_FIELD_COMPRESSION_DESC"
+                          label="PLG_COMPRESS_FIELD_COMPRESSION_LABEL"
                         >
                     <option
                             value="0">JNo</option>
