@@ -31,10 +31,44 @@ class plgSystemCompress extends JPlugin
 
     function onBeforeCompileHead()
     {
+
         if(JFactory::getApplication()->isAdmin())
         {
             return;
         }
+
+        $scriptFiles    = &$this->_document->_scripts;
+        $scripts        = &$this->_document->_script;
+        $stylesheets    = &$this->_document->_styleSheets;
+        $styles         = &$this->_document->_style;
+        $compressedJsFiles = array();
+
+        if($this->_options['jscompression'])
+        {
+
+           foreach($scriptFiles as $file => $attributes )
+           {
+               if (JMediaCompressor::compressFile($file, $this->_getCompressorOptions('js')))
+               {
+                   $destination = str_ireplace('.js','.min.js', $file);
+                   $compressedJsFiles[$file] = $attributes;
+               }
+           }
+        }
+
+        var_dump($scriptFiles);
+        var_dump($compressedJsFiles);
+
+    }
+
+    private function _getCompressorOptions($type)
+    {
+        return array('type' => $type, 'REMOVE_COMMENTS' => true);
+    }
+
+    private function _getCombinerOptions($type)
+    {
+
     }
 
 }
