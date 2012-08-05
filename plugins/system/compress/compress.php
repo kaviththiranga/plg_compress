@@ -10,21 +10,31 @@
  */
 class plgSystemCompress extends JPlugin
 {
+    var $_document;
+    var $_options;
+
     function __construct(& $subject, $config)
     {
         parent::__construct($subject, $config);
 
-        //Set the language in the class
-        $config = JFactory::getConfig();
-        $options = array(
-            'compression'	=> $this->params->get('compression', false),
+        $this->_options = array(
+            'jscompression'	    => $this->params->get('jscompression', false),
+            'csscompression'	=> $this->params->get('csscompression', false),
+            'combinejs'	        => $this->params->get('combinejs', false),
+            'combinecss'	    => $this->params->get('combinecss', false),
+            'combinecache'	    => $this->params->get('combinecache', false),
+            'compresscache'	    => $this->params->get('compresscache', false)
         );
 
+        $this->_document = JFactory::getDocument();
     }
 
     function onBeforeCompileHead()
     {
-
+        if(JFactory::getApplication()->isAdmin())
+        {
+            return;
+        }
     }
 
 }

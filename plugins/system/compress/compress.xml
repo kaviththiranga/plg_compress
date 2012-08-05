@@ -21,7 +21,7 @@
     <config>
         <fields name="params">
 
-            <fieldset name="basic">
+            <fieldset name="compressionFS" label="PLG_COMPRESS_FIELDSET_COMPRESSIONFS_LABEL">
                 <field	name="jscompression" type="radio"
                           default="0"
                           description="PLG_COMPRESS_FIELD_JSCOMPRESSION_DESC"
@@ -43,6 +43,53 @@
                             value="1">JYes</option>
                 </field>
             </fieldset>
+
+            <fieldset name="combiningFS" label="PLG_COMPRESS_FIELDSET_COMBININGFS_LABEL">
+                <field	name="combinejs" type="radio"
+                          default="0"
+                          description="PLG_COMPRESS_FIELD_JSCOMBINING_DESC"
+                          label="PLG_COMPRESS_FIELD_JSCOMBINING_LABEL"
+                        >
+                    <option
+                            value="0">JNo</option>
+                    <option
+                            value="1">JYes</option>
+                </field>
+                <field	name="combinecss" type="radio"
+                          default="0"
+                          description="PLG_COMPRESS_FIELD_CSSCOMBINING_DESC"
+                          label="PLG_COMPRESS_FIELD_CSSCOMBINING_LABEL"
+                        >
+                    <option
+                            value="0">JNo</option>
+                    <option
+                            value="1">JYes</option>
+                </field>
+            </fieldset>
+
+            <fieldset name="cacheFS" label="PLG_COMPRESS_FIELDSET_CACHEFS_LABEL">
+                <field	name="compresscache" type="radio"
+                          default="0"
+                          description="PLG_COMPRESS_FIELD_COMPRESSCACHE_DESC"
+                          label="PLG_COMPRESS_FIELD_COMPRESSCACHE_LABEL"
+                        >
+                    <option
+                            value="0">JNo</option>
+                    <option
+                            value="1">JYes</option>
+                </field>
+                <field	name="combinecache" type="radio"
+                          default="0"
+                          description="PLG_COMPRESS_FIELD_COMBINECACHE_DESC"
+                          label="PLG_COMPRESS_FIELD_COMBINECACHE_LABEL"
+                        >
+                    <option
+                            value="0">JNo</option>
+                    <option
+                            value="1">JYes</option>
+                </field>
+            </fieldset>
+
 
         </fields>
     </config>
