@@ -48,22 +48,27 @@ class plgSystemCompress extends JPlugin
 
            foreach($scriptFiles as $file => $attributes )
            {
-               if (JMediaCompressor::compressFile($file, $this->_getCompressorOptions('js')))
+               if(JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $this->_getCompressorOptions('js')))
                {
-                   $destination = str_ireplace('.js','.min.js', $file);
-                   $compressedJsFiles[$file] = $attributes;
+                   $destinationFile = str_ireplace('.js','.min.js', $file);
+                   $compressedJsFiles[$destinationFile] = $attributes;
+               }
+               else
+               {
+                   $compressedJsFiles[$file]= $attributes;
                }
            }
+           $scriptFiles = $compressedJsFiles;
         }
 
         var_dump($scriptFiles);
-        var_dump($compressedJsFiles);
+        //var_dump($compressedJsFiles);
 
     }
 
     private function _getCompressorOptions($type)
     {
-        return array('type' => $type, 'REMOVE_COMMENTS' => true);
+        return array('type' => $type, 'REMOVE_COMMENTS' => true, 'overwrite' => true);
     }
 
     private function _getCombinerOptions($type)
