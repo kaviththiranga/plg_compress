@@ -42,6 +42,7 @@ class plgSystemCompress extends JPlugin
         $stylesheets    = &$this->_document->_styleSheets;
         $styles         = &$this->_document->_style;
         $compressedJsFiles = array();
+        $combinedJsFiles   = array();
 
         if($this->_options['jscompression'])
         {
@@ -61,7 +62,47 @@ class plgSystemCompress extends JPlugin
            $scriptFiles = $compressedJsFiles;
         }
 
-        var_dump($scriptFiles);
+        if ($this->_options['combinejs'])
+        {
+            $currentFileSet = array();
+            $currentAttribs = array();
+            $fileCount      = 0;
+
+            foreach($scriptFiles as $file => $attributes)
+            {
+                if($fileCount === 0)
+                {
+                    $currentAttribs = $attributes;
+                    $currentFileSet[] = $file;
+
+                }
+                if (md5(serialize($currentAttribs)) !== md5(serialize($attributes)))
+                {
+                    var_dump($currentFileSet);
+                    $currentAttribs = $attributes;
+
+                    $currentFileSet = array();
+
+                }
+                $fileCount++;
+                $currentFileSet[] = $file;
+                if(count($scriptFiles)===$fileCount)
+                {
+                    var_dump($currentFileSet);
+                }
+
+
+                //var_dump($currentFileSet);
+
+
+
+                //var_dump($currentAttribs);
+                //var_dump($fileCount);
+            }
+
+        }
+
+       //var_dump($scriptFiles);
         //var_dump($compressedJsFiles);
 
     }
