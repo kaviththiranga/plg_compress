@@ -88,7 +88,7 @@ class plgSystemCompress extends JPlugin
 
                 if (md5(serialize($currentAttribs)) !== md5(serialize($attributes)))
                 {
-                    $combinedFile = $this->_compressJsFiles($currentFileSet);
+                    $combinedFile = $this->_combineJsFiles($currentFileSet);
                     $this->combinedJsFiles[$combinedFile] = $currentAttribs;
 
                     $currentAttribs = $attributes;
@@ -99,7 +99,7 @@ class plgSystemCompress extends JPlugin
 
                 if(count($this->scriptFiles)===$fileCount)
                 {
-                    $combinedFile = $this->_compressJsFiles($currentFileSet);
+                    $combinedFile = $this->_combineJsFiles($currentFileSet);
                     $this->combinedJsFiles[$combinedFile] = $currentAttribs;
                  }
             }
@@ -107,12 +107,12 @@ class plgSystemCompress extends JPlugin
         }
     }
 
-    private function _compressJsFiles($files)
+    private function _combineJsFiles($files)
     {
         $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
-        JMediaCombiner::combineFiles($files,$this->_getCombinerOptions('js'),dirname(JPATH_SITE).$destinationFile);
+        JMediaCombiner::combineFiles($files,$this->_getCombinerOptions('js'),$destinationFile);
         var_dump($files);
-        return $files[0];
+        return $destinationFile;
     }
 
     private function _getCompressorOptions($type)
