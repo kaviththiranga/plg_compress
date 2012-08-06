@@ -81,45 +81,37 @@ class plgSystemCompress extends JPlugin
                 if($fileCount === 0)
                 {
                     $currentAttribs = $attributes;
-                    $currentFileSet[] = $file;
+                    $currentFileSet[] = dirname(JPATH_SITE).$file;
                     $fileCount++;
                     continue;
                 }
 
                 if (md5(serialize($currentAttribs)) !== md5(serialize($attributes)))
                 {
-                    //var_dump($currentFileSet);
-
-                     $combinedFile = $this->_compressJsFiles($currentFileSet);
-                     $this->combinedJsFiles[$combinedFile] = $currentAttribs;
+                    $combinedFile = $this->_compressJsFiles($currentFileSet);
+                    $this->combinedJsFiles[$combinedFile] = $currentAttribs;
 
                     $currentAttribs = $attributes;
                     $currentFileSet = array();
-
                 }
                 $fileCount++;
-                $currentFileSet[] = $file;
+                $currentFileSet[] = dirname(JPATH_SITE).$file;
+
                 if(count($this->scriptFiles)===$fileCount)
                 {
                     $combinedFile = $this->_compressJsFiles($currentFileSet);
                     $this->combinedJsFiles[$combinedFile] = $currentAttribs;
-                    //var_dump($currentFileSet);
-                }
-               //var_dump($this->combinedJsFiles);
-                //var_dump($currentAttribs);
-                //var_dump($fileCount);
+                 }
             }
             $this->scriptFiles = $this->combinedJsFiles;
-
         }
-
-       //var_dump($scriptFiles);
-        //var_dump($compressedJsFiles);
-
     }
 
     private function _compressJsFiles($files)
     {
+        $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
+        JMediaCombiner::combineFiles($files,$this->_getCombinerOptions('js'),dirname(JPATH_SITE).$destinationFile);
+        var_dump($files);
         return $files[0];
     }
 
@@ -130,7 +122,7 @@ class plgSystemCompress extends JPlugin
 
     private function _getCombinerOptions($type)
     {
-
+        return array('type' => $type, 'FILE_COMMENTS' => true, 'overwrite' => true);
     }
 
 }
