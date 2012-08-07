@@ -81,7 +81,7 @@ class plgSystemCompress extends JPlugin
                 if($fileCount === 0)
                 {
                     $currentAttribs = $attributes;
-                    $currentFileSet[] = dirname(JPATH_SITE).$file;
+                    $currentFileSet[] = $file;
                     $fileCount++;
                     continue;
                 }
@@ -95,7 +95,7 @@ class plgSystemCompress extends JPlugin
                     $currentFileSet = array();
                 }
                 $fileCount++;
-                $currentFileSet[] = dirname(JPATH_SITE).$file;
+                $currentFileSet[] = $file;
 
                 if(count($this->scriptFiles)===$fileCount)
                 {
@@ -109,8 +109,16 @@ class plgSystemCompress extends JPlugin
 
     private function _combineJsFiles($files)
     {
+        $filesFullPath = array();
+        // Set full file path in order to combiner to work properly
+        foreach ($files as $file)
+        {
+           $filesFullPath[] = dirname(JPATH_SITE).$file;
+
+        }
+        //var_dump($files);
         $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
-        JMediaCombiner::combineFiles($files,$this->_getCombinerOptions('js'),$destinationFile);
+        JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),$destinationFile);
         var_dump($files);
         return $destinationFile;
     }

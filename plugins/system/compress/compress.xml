@@ -42,6 +42,12 @@
                     <option
                             value="1">JYes</option>
                 </field>
+                <field name="compresssavepath" type="textarea"
+                       default=""
+                       description="PLG_COMPRESS_FIELD_COMPRESSIONPATH_DESC"
+                       label="PLG_COMPRESS_FIELD_COMPRESSIONPATH_LABEL"
+                       size="200"
+                        />
             </fieldset>
 
             <fieldset name="combiningFS" label="PLG_COMPRESS_FIELDSET_COMBININGFS_LABEL">
@@ -65,6 +71,12 @@
                     <option
                             value="1">JYes</option>
                 </field>
+                <field name="combinesavepath" type="textarea"
+                       default=""
+                       description="PLG_COMPRESS_FIELD_COMPRESSIONPATH_DESC"
+                       label="PLG_COMPRESS_FIELD_COMPRESSIONPATH_LABEL"
+                       size="200"
+                        />
             </fieldset>
 
             <fieldset name="cacheFS" label="PLG_COMPRESS_FIELDSET_CACHEFS_LABEL">
@@ -88,6 +100,12 @@
                     <option
                             value="1">JYes</option>
                 </field>
+                <field name="cachesavepath" type="textarea"
+                       default=""
+                       description="PLG_COMPRESS_FIELD_CACHEPATH_DESC"
+                       label="PLG_COMPRESS_FIELD_CACHEPATH_LABEL"
+                       size="200"
+                        />
             </fieldset>
 
 
