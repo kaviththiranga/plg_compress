@@ -52,7 +52,8 @@ class plgSystemCompress extends JPlugin
 
         $compressionOptions = $this->_getCompressorOptions('js');
 
-        if($this->_options['jscompression'])
+        // if only the compression is on, do the following, otherwise let the combiner take care of compression also
+        if($this->_options['jscompression'] && !$this->_options['combinejs'])
         {
            $compressionOptions = $this->_getCompressorOptions('js');
 
@@ -86,7 +87,7 @@ class plgSystemCompress extends JPlugin
                     $fileCount++;
                     continue;
                 }
-
+                // Only combine files that have similar attributes, divide files into separate sets depending on attributes
                 if (md5(serialize($currentAttribs)) !== md5(serialize($attributes)))
                 {
                     $combinedFile = $this->_combineJsFiles($currentFileSet);
@@ -118,7 +119,7 @@ class plgSystemCompress extends JPlugin
 
         }
         $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
-        JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),$destinationFile);
+        JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),dirname(JPATH_SITE).$destinationFile);
 
         var_dump($this->_getCombinerOptions('js'));
         return $destinationFile;
@@ -141,7 +142,7 @@ class plgSystemCompress extends JPlugin
 
             if($tmpOption[1]==='true' || $tmpOption[1]=== 'false')
             {
-               $tmpOption[1] = (bool)$tmpOption[1];
+                ($tmpOption[1] === 'true') ?$tmpOption[1] = true: $tmpOption[1]= false;
             }
             $options[$tmpOption[0]] = $tmpOption[1];
             $tmpOption=array();
@@ -155,6 +156,14 @@ class plgSystemCompress extends JPlugin
 
         $options['type'] = $type;
 
+        // If compression is also on for this type, pass options for the compressor
+        if ($this->params->get($type.'compression'))
+        {
+            $options['COMPRESS'] = true;
+            $options['COMPRESS_OPTIONS'] = $this->_getCompressorOptions($type);
+
+        }
+
         foreach($tmp as $option)
         {
             $tmpOption = explode('=',$option);
@@ -166,7 +175,7 @@ class plgSystemCompress extends JPlugin
 
             if($tmpOption[1]==='true' || $tmpOption[1]=== 'false')
             {
-                $tmpOption[1] = (bool)$tmpOption[1];
+                ($tmpOption[1] === 'true') ?$tmpOption[1] = true: $tmpOption[1]= false;
             }
             $options[$tmpOption[0]] = $tmpOption[1];
             $tmpOption=array();

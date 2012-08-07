@@ -43,7 +43,7 @@
                             value="1">JYes</option>
                 </field>
                 <field name="compressoptions" type="textarea"
-                       default="REMOVE_COMMENTS=true; MIN_COLOR_CODES=true; LIMIT_LINE_LENGTH=true;"
+                       default="REMOVE_COMMENTS=true; MIN_COLOR_CODES=true; LIMIT_LINE_LENGTH=true;overwrite=true"
                        description="PLG_COMPRESS_FIELD_COMPRESSOPTIONS_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSOPTIONS_LABEL"
                        cols="40"
@@ -54,6 +54,12 @@
                        description="PLG_COMPRESS_FIELD_COMPRESSIONPATH_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSIONPATH_LABEL"
                        size="70"
+                        />
+                <field name="compressprefix" type="text"
+                       default=""
+                       description="PLG_COMPRESS_FIELD_COMPRESSIONPREFIX_DESC"
+                       label="PLG_COMPRESS_FIELD_COMPRESSIONPREFIX_LABEL"
+                       size="10"
                         />
             </fieldset>
 
@@ -79,7 +85,7 @@
                             value="1">JYes</option>
                 </field>
                 <field name="combineoptions" type="textarea"
-                       default="FILE_COMMENTS = true;"
+                       default="FILE_COMMENTS = true;overwrite=true"
                        description="PLG_COMPRESS_FIELD_COMBINEOPTIONS_DESC"
                        label="PLG_COMPRESS_FIELD_COMBINEOPTIONS_LABEL"
                        cols="40"
@@ -90,6 +96,12 @@
                        description="PLG_COMPRESS_FIELD_COMPRESSIONPATH_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSIONPATH_LABEL"
                        size="70"
+                        />
+                <field name="combineprefix" type="text"
+                       default=""
+                       description="PLG_COMPRESS_FIELD_COMBINEPREFIX_DESC"
+                       label="PLG_COMPRESS_FIELD_COMBINEPREFIX_LABEL"
+                       size="10"
                         />
             </fieldset>
 
