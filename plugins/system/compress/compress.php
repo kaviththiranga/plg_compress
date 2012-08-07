@@ -50,14 +50,15 @@ class plgSystemCompress extends JPlugin
             return;
         }
 
-
+        $compressionOptions = $this->_getCompressorOptions('js');
 
         if($this->_options['jscompression'])
         {
+           $compressionOptions = $this->_getCompressorOptions('js');
 
            foreach($this->scriptFiles as $file => $attributes )
            {
-               if(JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $this->_getCompressorOptions('js')))
+               if(JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $compressionOptions))
                {
                    $destinationFile = str_ireplace('.js','.min.js', $file);
                    $this->compressedJsFiles[$destinationFile] = $attributes;
@@ -116,21 +117,61 @@ class plgSystemCompress extends JPlugin
            $filesFullPath[] = dirname(JPATH_SITE).$file;
 
         }
-        //var_dump($files);
         $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
         JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),$destinationFile);
-        var_dump($files);
+
+        var_dump($this->_getCombinerOptions('js'));
         return $destinationFile;
     }
 
     private function _getCompressorOptions($type)
     {
-        return array('type' => $type, 'REMOVE_COMMENTS' => true, 'overwrite' => true);
+        $tmp = explode(';', $this->params->get('compressoptions'));
+
+        $options['type'] = $type;
+
+        foreach($tmp as $option)
+        {
+            $tmpOption = explode('=',$option);
+            if(count($tmpOption) != 2){
+                continue;
+            }
+            $tmpOption[0]=trim($tmpOption[0]);
+            $tmpOption[1]=trim($tmpOption[1]);
+
+            if($tmpOption[1]==='true' || $tmpOption[1]=== 'false')
+            {
+               $tmpOption[1] = (bool)$tmpOption[1];
+            }
+            $options[$tmpOption[0]] = $tmpOption[1];
+            $tmpOption=array();
+        }
+        return $options;
     }
 
     private function _getCombinerOptions($type)
     {
-        return array('type' => $type, 'FILE_COMMENTS' => true, 'overwrite' => true);
+        $tmp = explode(';', $this->params->get('combineoptions'));
+
+        $options['type'] = $type;
+
+        foreach($tmp as $option)
+        {
+            $tmpOption = explode('=',$option);
+            if(count($tmpOption) != 2){
+                continue;
+            }
+            $tmpOption[0]=trim($tmpOption[0]);
+            $tmpOption[1]=trim($tmpOption[1]);
+
+            if($tmpOption[1]==='true' || $tmpOption[1]=== 'false')
+            {
+                $tmpOption[1] = (bool)$tmpOption[1];
+            }
+            $options[$tmpOption[0]] = $tmpOption[1];
+            $tmpOption=array();
+        }
+        return $options;
     }
 
 }
