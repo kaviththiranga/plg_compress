@@ -10,16 +10,16 @@
  */
 class plgSystemCompress extends JPlugin
 {
-    var $_document;
-    var $_options;
-    var $scriptFiles;
-    var $scripts;
-    var $stylesheets;
-    var $styles;
-    var $compressedJsFiles ;
-    var $combinedJsFiles;
+	public $_document;
+	public $_options;
+	public $scriptFiles;
+	public $scripts;
+	public $stylesheets;
+	var $styles;
+	var $compressedJsFiles ;
+	var $combinedJsFiles;
 
-    function __construct(& $subject, $config)
+	function __construct(& $subject, $config)
     {
         parent::__construct($subject, $config);
 
