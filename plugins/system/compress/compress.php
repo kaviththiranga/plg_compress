@@ -112,7 +112,7 @@ class plgSystemCompress extends JPlugin
                 $this->compressedCssFiles[$file]= $attributes;
             }
         }
-        $this->scriptFiles = $this->compressedJsFiles;
+        $this->stylesheets = $this->compressedCssFiles;
     }
 
     private function _prepareAndCombineJs()
@@ -178,7 +178,7 @@ class plgSystemCompress extends JPlugin
             $fileCount++;
             $currentFileSet[] = $file;
 
-            if(count($this->scriptFiles)===$fileCount)
+            if(count($this->stylesheets)===$fileCount)
             {
                 $combinedFile = $this->_combineCssFiles($currentFileSet);
                 $this->combinedCssFiles[$combinedFile] = $currentAttribs;
