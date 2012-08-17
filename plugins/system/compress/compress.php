@@ -32,7 +32,7 @@ class plgSystemCompress extends JPlugin
             'combinecss'	    => $this->params->get('combinecss', false),
             'combinecache'	    => $this->params->get('combinecache', false),
             'compresscache'	    => $this->params->get('compresscache', false),
-            'cachetime'         => $this->params->get('cachetime', 5) * 24 * 60 * 60
+            'cachetime'         => $this->params->get('cachetime', 1) * 24 * 60 * 60
         );
 
         $this->_document = JFactory::getDocument();
@@ -90,6 +90,12 @@ class plgSystemCompress extends JPlugin
             {
                 $this->compressedJsFiles[$destinationFile] = $attributes;
             }
+            else if(file_exists($file) &&
+                JMediaCompressor::compressFile($file, $compressionOptions))
+            {
+
+                $this->compressedJsFiles[$destinationFile] = $attributes;
+            }
             else if(file_exists(dirname(JPATH_SITE).$file) &&
                     JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $compressionOptions))
             {
@@ -115,6 +121,12 @@ class plgSystemCompress extends JPlugin
             if($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
                 (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
             {
+                $this->compressedCssFiles[$destinationFile] = $attributes;
+            }
+            else if(file_exists($file) &&
+                JMediaCompressor::compressFile($file, $compressionOptions))
+            {
+
                 $this->compressedCssFiles[$destinationFile] = $attributes;
             }
             else if(file_exists(dirname(JPATH_SITE).$file) &&
@@ -209,8 +221,18 @@ class plgSystemCompress extends JPlugin
         // Set full file path in order to combiner to work properly
         foreach ($files as $file)
         {
-           $filesFullPath[] = dirname(JPATH_SITE).$file;
-
+           if(file_exists($file))
+           {
+               $filesFullPath[] = $file;
+           }
+           else if(file_exists(dirname(JPATH_SITE).$file))
+           {
+               $filesFullPath[] = dirname(JPATH_SITE).$file;
+           }
+           else
+           {
+               continue;
+           }
         }
         $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
 
@@ -233,7 +255,18 @@ class plgSystemCompress extends JPlugin
         // Set full file path in order to combiner to work properly
         foreach ($files as $file)
         {
-            $filesFullPath[] = dirname(JPATH_SITE).$file;
+            if(file_exists($file))
+            {
+                $filesFullPath[] = $file;
+            }
+            else if(file_exists(dirname(JPATH_SITE).$file))
+            {
+                $filesFullPath[] = dirname(JPATH_SITE).$file;
+            }
+            else
+            {
+                continue;
+            }
 
         }
         $destinationFile = str_ireplace('.css','.combined.css', $files[0]);
