@@ -77,7 +77,6 @@ class plgSystemCompress extends JPlugin
             $this->_prepareAndCombineCss();
         }
 
-        var_dump($this->stylesheets);
     }
 
     public function _compressJsFiles()
@@ -161,7 +160,12 @@ class plgSystemCompress extends JPlugin
                 $currentAttribs = $attributes;
                 $currentFileSet[] = $file;
                 $fileCount++;
-                continue;
+                //Do not skip if only one file is to be combined.
+                if(count($this->scriptFiles)!= 1)
+                {
+                    continue;
+                }
+
             }
 
             if(!file_exists(dirname(JPATH_SITE).$file)){
@@ -179,7 +183,7 @@ class plgSystemCompress extends JPlugin
             $fileCount++;
             $currentFileSet[] = $file;
 
-            if(count($this->scriptFiles)===$fileCount)
+            if(count($this->scriptFiles)<=$fileCount)
             {
                 $combinedFile = $this->_combineJsFiles($currentFileSet);
                 $this->combinedJsFiles[$combinedFile] = $currentAttribs;
@@ -203,12 +207,17 @@ class plgSystemCompress extends JPlugin
 
         foreach($this->stylesheets as $file => $attributes)
         {
+
             if($fileCount === 0)
             {
                 $currentAttribs = $attributes;
                 $currentFileSet[] = $file;
                 $fileCount++;
-                continue;
+                //Do not skip if only one file is to be combined.
+                if(count($this->stylesheets)!= 1)
+                {
+                    continue;
+                }
             }
             if(!file_exists(dirname(JPATH_SITE).$file)){
                 $preservedFiles[$file] = $attributes;
@@ -224,8 +233,8 @@ class plgSystemCompress extends JPlugin
             }
             $fileCount++;
             $currentFileSet[] = $file;
-
-            if(count($this->stylesheets)===$fileCount)
+            var_dump($file);
+            if(count($this->stylesheets)<= $fileCount)
             {
                 $combinedFile = $this->_combineCssFiles($currentFileSet);
                 $this->combinedCssFiles[$combinedFile] = $currentAttribs;
@@ -255,7 +264,7 @@ class plgSystemCompress extends JPlugin
         {
             return $destinationFile;
         }
-        else
+        else if (count($filesFullPath) != 0)
         {
             JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),
                                             dirname(JPATH_SITE).$destinationFile);
@@ -270,6 +279,7 @@ class plgSystemCompress extends JPlugin
         foreach ($files as $file)
         {
             if(file_exists(dirname(JPATH_SITE).$file)){
+
                 $filesFullPath[] = dirname(JPATH_SITE).$file;
             }
         }
@@ -280,7 +290,7 @@ class plgSystemCompress extends JPlugin
         {
             return $destinationFile;
         }
-        else
+        else if (count($filesFullPath) != 0)
         {
             JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('css'),
                                             dirname(JPATH_SITE).$destinationFile);
