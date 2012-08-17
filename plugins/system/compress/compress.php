@@ -233,7 +233,7 @@ class plgSystemCompress extends JPlugin
             }
             $fileCount++;
             $currentFileSet[] = $file;
-            var_dump($file);
+
             if(count($this->stylesheets)<= $fileCount)
             {
                 $combinedFile = $this->_combineCssFiles($currentFileSet);
