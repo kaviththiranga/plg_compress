@@ -31,7 +31,8 @@ class plgSystemCompress extends JPlugin
             'combinejs'	        => $this->params->get('combinejs', false),
             'combinecss'	    => $this->params->get('combinecss', false),
             'combinecache'	    => $this->params->get('combinecache', false),
-            'compresscache'	    => $this->params->get('compresscache', false)
+            'compresscache'	    => $this->params->get('compresscache', false),
+            'cachetime'         => $this->params->get('cachetime', 5) * 24 * 60 * 60
         );
 
         $this->_document = JFactory::getDocument();
@@ -44,6 +45,7 @@ class plgSystemCompress extends JPlugin
         $this->combinedJsFiles   = array();
         $this->compressedCssFiles = array();
         $this->combinedCssFiles   = array();
+
     }
 
     function onBeforeCompileHead()
@@ -54,14 +56,11 @@ class plgSystemCompress extends JPlugin
             return;
         }
 
-        $compressionOptions = $this->_getCompressorOptions('js');
-
         // if only the compression is on, do the following, otherwise let the combiner take care of compression also
         if($this->_options['jscompression'] && !$this->_options['combinejs'])
         {
             $this->_compressJsFiles();
         }
-
         if ($this->_options['combinejs'])
         {
             $this->_prepareAndCombineJs();
@@ -77,15 +76,24 @@ class plgSystemCompress extends JPlugin
         }
     }
 
-    private function _compressJsFiles()
+    public function _compressJsFiles()
     {
         $compressionOptions = $this->_getCompressorOptions('js');
 
         foreach($this->scriptFiles as $file => $attributes )
         {
-            if(JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $compressionOptions))
+
+            $destinationFile = str_ireplace('.js','.min.js', $file);
+
+            if($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
+                    (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
             {
-                $destinationFile = str_ireplace('.js','.min.js', $file);
+                $this->compressedJsFiles[$destinationFile] = $attributes;
+            }
+            else if(file_exists(dirname(JPATH_SITE).$file) &&
+                    JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $compressionOptions))
+            {
+
                 $this->compressedJsFiles[$destinationFile] = $attributes;
             }
             else
@@ -96,15 +104,23 @@ class plgSystemCompress extends JPlugin
         $this->scriptFiles = $this->compressedJsFiles;
     }
 
-    private function _compressCssFiles()
+    public function _compressCssFiles()
     {
         $compressionOptions = $this->_getCompressorOptions('css');
 
         foreach($this->stylesheets as $file => $attributes )
         {
-            if(JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $compressionOptions))
+            $destinationFile = str_ireplace('.css','.min.css', $file);
+
+            if($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
+                (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
             {
-                $destinationFile = str_ireplace('.css','.min.css', $file);
+                $this->compressedCssFiles[$destinationFile] = $attributes;
+            }
+            else if(file_exists(dirname(JPATH_SITE).$file) &&
+                JMediaCompressor::compressFile(dirname(JPATH_SITE).$file, $compressionOptions))
+            {
+
                 $this->compressedCssFiles[$destinationFile] = $attributes;
             }
             else
@@ -115,7 +131,7 @@ class plgSystemCompress extends JPlugin
         $this->stylesheets = $this->compressedCssFiles;
     }
 
-    private function _prepareAndCombineJs()
+    public function _prepareAndCombineJs()
     {
         $currentFileSet = array();
         $currentAttribs = array();
@@ -151,7 +167,7 @@ class plgSystemCompress extends JPlugin
         $this->scriptFiles = $this->combinedJsFiles;
     }
 
-    private function _prepareAndCombineCss()
+    public function _prepareAndCombineCss()
     {
         $currentFileSet = array();
         $currentAttribs = array();
@@ -187,7 +203,7 @@ class plgSystemCompress extends JPlugin
         $this->stylesheets = $this->combinedCssFiles;
     }
 
-    private function _combineJsFiles($files)
+    public function _combineJsFiles($files)
     {
         $filesFullPath = array();
         // Set full file path in order to combiner to work properly
@@ -197,13 +213,21 @@ class plgSystemCompress extends JPlugin
 
         }
         $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
-        JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),dirname(JPATH_SITE).$destinationFile);
 
-        var_dump($this->_getCombinerOptions('js'));
+        if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
+            (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
+        {
+            return $destinationFile;
+        }
+        else
+        {
+            JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('js'),
+                                            dirname(JPATH_SITE).$destinationFile);
+        }
         return $destinationFile;
     }
 
-    private function _combineCssFiles($files)
+    public function _combineCssFiles($files)
     {
         $filesFullPath = array();
         // Set full file path in order to combiner to work properly
@@ -213,12 +237,20 @@ class plgSystemCompress extends JPlugin
 
         }
         $destinationFile = str_ireplace('.css','.combined.css', $files[0]);
-        JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('css'),dirname(JPATH_SITE).$destinationFile);
 
-        var_dump($this->_getCombinerOptions('css'));
+        if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
+            (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
+        {
+            return $destinationFile;
+        }
+        else
+        {
+            JMediaCombiner::combineFiles($filesFullPath,$this->_getCombinerOptions('css'),
+                                            dirname(JPATH_SITE).$destinationFile);
+        }
         return $destinationFile;
     }
-    private function _getCompressorOptions($type)
+    public function _getCompressorOptions($type)
     {
         $tmp = explode(';', $this->params->get('compressoptions'));
 
@@ -243,7 +275,7 @@ class plgSystemCompress extends JPlugin
         return $options;
     }
 
-    private function _getCombinerOptions($type)
+    public function _getCombinerOptions($type)
     {
         $tmp = explode(';', $this->params->get('combineoptions'));
 

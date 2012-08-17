@@ -126,10 +126,10 @@
                     <option
                             value="1">JYes</option>
                 </field>
-                <field name="cachesavepath" type="text"
+                <field name="cachetime" type="text"
                        default=""
-                       description="PLG_COMPRESS_FIELD_CACHEPATH_DESC"
-                       label="PLG_COMPRESS_FIELD_CACHEPATH_LABEL"
+                       description="PLG_COMPRESS_FIELD_CACHETIME_DESC"
+                       label="PLG_COMPRESS_FIELD_CACHETIME_LABEL"
                        size="70"
                         />
             </fieldset>
