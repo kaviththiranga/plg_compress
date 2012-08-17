@@ -46,6 +46,8 @@ class plgSystemCompress extends JPlugin
         $this->compressedCssFiles = array();
         $this->combinedCssFiles   = array();
 
+
+
     }
 
     function onBeforeCompileHead()
@@ -74,6 +76,8 @@ class plgSystemCompress extends JPlugin
         {
             $this->_prepareAndCombineCss();
         }
+
+        var_dump($this->stylesheets);
     }
 
     public function _compressJsFiles()
@@ -147,6 +151,7 @@ class plgSystemCompress extends JPlugin
     {
         $currentFileSet = array();
         $currentAttribs = array();
+        $preservedFiles = array();
         $fileCount      = 0;
 
         foreach($this->scriptFiles as $file => $attributes)
@@ -157,6 +162,10 @@ class plgSystemCompress extends JPlugin
                 $currentFileSet[] = $file;
                 $fileCount++;
                 continue;
+            }
+
+            if(!file_exists(dirname(JPATH_SITE).$file)){
+                $preservedFiles[$file] = $attributes;
             }
             // Only combine files that have similar attributes, divide files into separate sets depending on attributes
             if (md5(serialize($currentAttribs)) !== md5(serialize($attributes)))
@@ -175,7 +184,13 @@ class plgSystemCompress extends JPlugin
                 $combinedFile = $this->_combineJsFiles($currentFileSet);
                 $this->combinedJsFiles[$combinedFile] = $currentAttribs;
             }
+
         }
+        foreach($preservedFiles as $file => $attributes)
+        {
+            $this->combinedJsFiles[$file] = $attributes;
+        }
+
         $this->scriptFiles = $this->combinedJsFiles;
     }
 
@@ -183,6 +198,7 @@ class plgSystemCompress extends JPlugin
     {
         $currentFileSet = array();
         $currentAttribs = array();
+        $preservedFiles = array();
         $fileCount      = 0;
 
         foreach($this->stylesheets as $file => $attributes)
@@ -193,6 +209,9 @@ class plgSystemCompress extends JPlugin
                 $currentFileSet[] = $file;
                 $fileCount++;
                 continue;
+            }
+            if(!file_exists(dirname(JPATH_SITE).$file)){
+                $preservedFiles[$file] = $attributes;
             }
             // Only combine files that have similar attributes, divide files into separate sets depending on attributes
             if (md5(serialize($currentAttribs)) !== md5(serialize($attributes)))
@@ -212,6 +231,10 @@ class plgSystemCompress extends JPlugin
                 $this->combinedCssFiles[$combinedFile] = $currentAttribs;
             }
         }
+        foreach($preservedFiles as $file => $attributes)
+        {
+            $this->combinedCssFiles[$file] = $attributes;
+        }
         $this->stylesheets = $this->combinedCssFiles;
     }
 
@@ -221,20 +244,11 @@ class plgSystemCompress extends JPlugin
         // Set full file path in order to combiner to work properly
         foreach ($files as $file)
         {
-           if(file_exists($file))
-           {
-               $filesFullPath[] = $file;
-           }
-           else if(file_exists(dirname(JPATH_SITE).$file))
-           {
-               $filesFullPath[] = dirname(JPATH_SITE).$file;
-           }
-           else
-           {
-               continue;
-           }
+            if(file_exists(dirname(JPATH_SITE).$file)){
+                $filesFullPath[] = dirname(JPATH_SITE).$file;
+            }
         }
-        $destinationFile = str_ireplace('.js','.combined.js', $files[0]);
+        $destinationFile = str_ireplace( JFile::getName($files[0]), md5(serialize($files)).'.combined.js', $files[0]);
 
         if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
             (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
@@ -255,21 +269,11 @@ class plgSystemCompress extends JPlugin
         // Set full file path in order to combiner to work properly
         foreach ($files as $file)
         {
-            if(file_exists($file))
-            {
-                $filesFullPath[] = $file;
-            }
-            else if(file_exists(dirname(JPATH_SITE).$file))
-            {
+            if(file_exists(dirname(JPATH_SITE).$file)){
                 $filesFullPath[] = dirname(JPATH_SITE).$file;
             }
-            else
-            {
-                continue;
-            }
-
         }
-        $destinationFile = str_ireplace('.css','.combined.css', $files[0]);
+        $destinationFile = str_ireplace( JFile::getName($files[0]), md5(serialize($files)).'.combined.css', $files[0]);
 
         if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
             (time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
