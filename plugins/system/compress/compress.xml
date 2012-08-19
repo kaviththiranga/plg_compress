@@ -50,13 +50,13 @@
                        rows="5"
                         />
                 <field name="compresssavepath" type="text"
-                       default=""
+                       default="tmp/compressed/"
                        description="PLG_COMPRESS_FIELD_COMPRESSIONPATH_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSIONPATH_LABEL"
                        size="70"
                         />
                 <field name="compressprefix" type="text"
-                       default=""
+                       default="min"
                        description="PLG_COMPRESS_FIELD_COMPRESSIONPREFIX_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSIONPREFIX_LABEL"
                        size="10"
@@ -92,13 +92,13 @@
                        rows="5"
                         />
                 <field name="combinesavepath" type="text"
-                       default=""
+                       default="tmp/combined/"
                        description="PLG_COMPRESS_FIELD_COMPRESSIONPATH_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSIONPATH_LABEL"
                        size="70"
                         />
                 <field name="combineprefix" type="text"
-                       default=""
+                       default="combined"
                        description="PLG_COMPRESS_FIELD_COMBINEPREFIX_DESC"
                        label="PLG_COMPRESS_FIELD_COMBINEPREFIX_LABEL"
                        size="10"
