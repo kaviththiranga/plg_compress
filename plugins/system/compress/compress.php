@@ -33,10 +33,10 @@ class plgSystemCompress extends JPlugin
 			'combinecache'	    => $this->params->get('combinecache', false),
 			'compresscache'	    => $this->params->get('compresscache', false),
 			'cachetime'         => $this->params->get('cachetime', 1) * 24 * 60 * 60,
-            'compresssavepath'  => $this->params->get('compresssavepath'),
-            'combinesavepath'   => $this->params->get('combinesavepath'),
-            'compressprefix'    => $this->params->get('compressprefix'),
-            'combineprefix'     => $this->params->get('combineprefix')
+			'compresssavepath'  => $this->params->get('compresssavepath'),
+			'combinesavepath'   => $this->params->get('combinesavepath'),
+			'compressprefix'    => $this->params->get('compressprefix'),
+			'combineprefix'     => $this->params->get('combineprefix')
 		);
 
 		$this->_document = JFactory::getDocument();
@@ -66,17 +66,29 @@ class plgSystemCompress extends JPlugin
 		if($this->_options['jscompression'] && !$this->_options['combinejs'])
 		{
 			$this->_compressJsFiles();
+			$this->_compressDeclarations('js');
 		}
-		if ($this->_options['combinejs'])
+		else if ($this->_options['jscompression'] && $this->_options['combinejs'])
+		{
+			$this->_prepareAndCombineJs();
+			$this->_compressDeclarations('js');
+		}
+		else if (!$this->_options['jscompression'] && $this->_options['combinejs'])
 		{
 			$this->_prepareAndCombineJs();
 		}
+
 		if($this->_options['csscompression'] && !$this->_options['combinecss'])
 		{
 			$this->_compressCssFiles();
+			$this->_compressDeclarations('css');
 		}
-
-		if ($this->_options['combinecss'])
+		else if ($this->_options['csscompression'] && $this->_options['combinecss'])
+		{
+			$this->_prepareAndCombineCss();
+			$this->_compressDeclarations('css');
+		}
+		else if (!$this->_options['csscompression'] && $this->_options['combinecss'])
 		{
 			$this->_prepareAndCombineCss();
 		}
@@ -89,23 +101,21 @@ class plgSystemCompress extends JPlugin
 		foreach($this->scriptFiles as $file => $attributes )
 		{
 
-            $destinationFile = '';
-            // If save path is not defined, try to save in the location of source file
-            if ($this->_getSavePath('compress','js')===null && file_exists(dirname(JPATH_SITE).$file) ){
+			$destinationFile = '';
+			// If save path is not defined, try to save in the location of source file
+			if ($this->_getSavePath('compress','js')===null && file_exists(dirname(JPATH_SITE).$file) ){
 
-                $destinationFile = str_ireplace('.js','.'.$this->_getPrefix('compress').'.js', $file);
-            }
-            else if($this->_getSavePath('compress','js')===null && !file_exists(dirname(JPATH_SITE).$file) )
-            // This means that the file path is not a relative url, in this case, a save path is a must
-            {
-                throw new RuntimeException(JText::sprintf('SYSTEM_COMPRESS_PLUGIN_CONFIG_ERROR_NO_SAVE_PATH_DEFINED'));
-            }
-            else
-            {
-                $destinationFile = $this->_getSavePath('compress','js').str_ireplace('.js','.'.$this->_getPrefix('compress').'.js', JFile::getName($file));
-            }
-
-
+				$destinationFile = str_ireplace('.js','.'.$this->_getPrefix('compress').'.js', $file);
+			}
+			else if($this->_getSavePath('compress','js')===null && !file_exists(dirname(JPATH_SITE).$file) )
+			// This means that the file path is not a relative url, in this case, a save path is a must
+			{
+				throw new RuntimeException(JText::sprintf('SYSTEM_COMPRESS_PLUGIN_CONFIG_ERROR_NO_SAVE_PATH_DEFINED'));
+			}
+			else
+			{
+				$destinationFile = $this->_getSavePath('compress','js').str_ireplace('.js','.'.$this->_getPrefix('compress').'.js', JFile::getName($file));
+			}
 
 			if($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
 					(time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
@@ -118,22 +128,17 @@ class plgSystemCompress extends JPlugin
 
 				$this->compressedJsFiles[$destinationFile] = $attributes;
 			}
-            else if(!file_exists(dirname(JPATH_SITE).$file) &&
-                JMediaCompressor::compressFile($file, $compressionOptions,$destinationFile))
-            {
+			else if(!file_exists(dirname(JPATH_SITE).$file) &&
+				JMediaCompressor::compressFile($file, $compressionOptions,$destinationFile))
+			{
 
-                $this->compressedJsFiles[$destinationFile] = $attributes;
-            }
+				$this->compressedJsFiles[$destinationFile] = $attributes;
+			}
 			else
 			{
 				$this->compressedJsFiles[$file]= $attributes;
 			}
-            // Compress Script declarations
-            if( isset ($this->scripts['text/javascript']))
-            {
-                $this->scripts['text/javascript'] = JMediaCompressor::compressString($this->scripts['text/javascript'], $this->_getCompressorOptions('js'));
-            }
-		}
+		 }
 		$this->scriptFiles = $this->compressedJsFiles;
 	}
 
@@ -143,24 +148,24 @@ class plgSystemCompress extends JPlugin
 
 		foreach($this->stylesheets as $file => $attributes )
 		{
-            $destinationFile = '';
-            // If save path is not defined, try to save in the location of source file
-            if ($this->_getSavePath('compress','css')===null && file_exists(dirname(JPATH_SITE).$file) ){
+			$destinationFile = '';
+			// If save path is not defined, try to save in the location of source file
+			if ($this->_getSavePath('compress','css')===null && file_exists(dirname(JPATH_SITE).$file) ){
 
-                $destinationFile = str_ireplace('.css','.'.$this->_getPrefix('compress').'.css', $file);
-            }
-            else if($this->_getSavePath('compress','css')===null && !file_exists(dirname(JPATH_SITE).$file) )
-                // This means that the file path is not a relative url, in this case, a save path is a must
-            {
-                throw new RuntimeException(JText::sprintf('SYSTEM_COMPRESS_PLUGIN_CONFIG_ERROR_NO_SAVE_PATH_DEFINED'));
-            }
-            else
-            {
-                $destinationFile = $this->_getSavePath('compress','css').str_ireplace('.css','.'.$this->_getPrefix('compress').'.css', JFile::getName($file));
-            }
+				$destinationFile = str_ireplace('.css','.'.$this->_getPrefix('compress').'.css', $file);
+			}
+			else if($this->_getSavePath('compress','css')===null && !file_exists(dirname(JPATH_SITE).$file) )
+				// This means that the file path is not a relative url, in this case, a save path is a must
+			{
+				throw new RuntimeException(JText::sprintf('SYSTEM_COMPRESS_PLUGIN_CONFIG_ERROR_NO_SAVE_PATH_DEFINED'));
+			}
+			else
+			{
+				$destinationFile = $this->_getSavePath('compress','css').str_ireplace('.css','.'.$this->_getPrefix('compress').'.css', JFile::getName($file));
+			}
 
 
-            if($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
+			if($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
 				(time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
 			{
 				$this->compressedCssFiles[$destinationFile] = $attributes;
@@ -171,26 +176,38 @@ class plgSystemCompress extends JPlugin
 
 				$this->compressedCssFiles[$destinationFile] = $attributes;
 			}
-            else if(!file_exists(dirname(JPATH_SITE).$file) &&
-                JMediaCompressor::compressFile($file, $compressionOptions,$destinationFile))
-            {
+			else if(!file_exists(dirname(JPATH_SITE).$file) &&
+				JMediaCompressor::compressFile($file, $compressionOptions,$destinationFile))
+			{
 
-                $this->compressedCssFiles[$destinationFile] = $attributes;
-            }
+				$this->compressedCssFiles[$destinationFile] = $attributes;
+			}
 			else
 			{
 				$this->compressedCssFiles[$file]= $attributes;
 			}
-
-            // Compress Style declarations
-            if( isset ($this->styles['text/css']))
-            {
-                $this->styles['text/css'] = JMediaCompressor::compressString($this->styles['text/css'], $this->_getCompressorOptions('css'));
-            }
 		}
 		$this->stylesheets = $this->compressedCssFiles;
 	}
+	private function _compressDeclarations($case)
+	{
+		switch($case)
+		{
 
+			  case 'js':    // Compress Script declarations
+							if( isset ($this->scripts['text/javascript']))
+							{
+								$this->scripts['text/javascript'] = JMediaCompressor::compressString($this->scripts['text/javascript'], $this->_getCompressorOptions('js'));
+							}
+                            break;
+			case  'css':    // Compress Style declarations
+							if( isset ($this->styles['text/css']))
+							{
+								$this->styles['text/css'] = JMediaCompressor::compressString($this->styles['text/css'], $this->_getCompressorOptions('css'));
+							}
+                            break;
+		}
+	}
 	private function _prepareAndCombineJs()
 	{
 		$currentFileSet = array();
@@ -285,22 +302,22 @@ class plgSystemCompress extends JPlugin
 			if(file_exists(dirname(JPATH_SITE).$file)){
 				$filesFullPath[] = dirname(JPATH_SITE).$file;
 			}
-            else
-            {
-                $filesFullPath[] = $file;
-            }
+			else
+			{
+				$filesFullPath[] = $file;
+			}
 		}
 
-        $destinationFile = '';
+		$destinationFile = '';
 
-        if ($this->_getSavePath('combine','js') === null){
+		if ($this->_getSavePath('combine','js') === null){
 
-            $destinationFile = str_ireplace( JFile::getName($files[0]), md5(serialize($files)).'.'.$this->_getPrefix('combine').'.js', $files[0]);
-        }
-        else
-        {
-            $destinationFile = $this->_getSavePath('combine','js').md5(serialize($files)).'.'.$this->_getPrefix('combine').'.js';
-        }
+			$destinationFile = str_ireplace( JFile::getName($files[0]), md5(serialize($files)).'.'.$this->_getPrefix('combine').'.js', $files[0]);
+		}
+		else
+		{
+			$destinationFile = $this->_getSavePath('combine','js').md5(serialize($files)).'.'.$this->_getPrefix('combine').'.js';
+		}
 
 
 		if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
@@ -325,25 +342,25 @@ class plgSystemCompress extends JPlugin
 
 				$filesFullPath[] = dirname(JPATH_SITE).$file;
 			}
-            else
-            {
-                $filesFullPath[] = $file;
-            }
-        }
+			else
+			{
+				$filesFullPath[] = $file;
+			}
+		}
 
-        $destinationFile = '';
+		$destinationFile = '';
 
-        if ($this->_getSavePath('combine','css') === null){
+		if ($this->_getSavePath('combine','css') === null){
 
-            $destinationFile = str_ireplace( JFile::getName($files[0]), md5(serialize($files)).'.'.$this->_getPrefix('combine').'.css', $files[0]);
-        }
-        else
-        {
-            $destinationFile = $this->_getSavePath('combine','css').md5(serialize($files)).'.'.$this->_getPrefix('combine').'.css';
-        }
+			$destinationFile = str_ireplace( JFile::getName($files[0]), md5(serialize($files)).'.'.$this->_getPrefix('combine').'.css', $files[0]);
+		}
+		else
+		{
+			$destinationFile = $this->_getSavePath('combine','css').md5(serialize($files)).'.'.$this->_getPrefix('combine').'.css';
+		}
 
 
-        if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
+		if($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE).$destinationFile) &&
 			(time()-$this->_options['cachetime'] < filemtime(dirname(JPATH_SITE).$destinationFile)))
 		{
 			return $destinationFile;
@@ -355,71 +372,71 @@ class plgSystemCompress extends JPlugin
 		return $destinationFile;
 	}
 
-    private function _getSavePath ( $case , $type)
-    {
-        $destination = null;
-        $compressPath = $this->_options['compresssavepath'];
-        $combinePath = $this->_options['combinesavepath'];
+	private function _getSavePath ( $case , $type)
+	{
+		$destination = null;
+		$compressPath = $this->_options['compresssavepath'];
+		$combinePath = $this->_options['combinesavepath'];
 
-        switch($case){
+		switch($case){
 
-            case 'compress' :   if(file_exists($compressPath) || mkdir($compressPath))
-                                {
-                                    if(file_exists($compressPath.$type.'/') || mkdir($compressPath.$type.'/'))
-                                    {
-                                        $destination = $compressPath.$type.'/';
-                                    }
-                                    else
-                                    {
-                                        $destination = $compressPath;
-                                    }
-                                }
-                                break;
+			case 'compress' :   if(file_exists($compressPath) || mkdir($compressPath))
+								{
+									if(file_exists($compressPath.$type.'/') || mkdir($compressPath.$type.'/'))
+									{
+										$destination = $compressPath.$type.'/';
+									}
+									else
+									{
+										$destination = $compressPath;
+									}
+								}
+								break;
 
-            case 'combine'  :    if(file_exists($combinePath) || mkdir($combinePath))
-                                {
-                                    if(file_exists($combinePath.$type.'/') || mkdir($combinePath.$type.'/'))
-                                    {
-                                        $destination = $combinePath.$type.'/';
-                                    }
-                                    else
-                                    {
-                                        $destination = $combinePath;
-                                    }
-                                }
-                                break;
+			case 'combine'  :    if(file_exists($combinePath) || mkdir($combinePath))
+								{
+									if(file_exists($combinePath.$type.'/') || mkdir($combinePath.$type.'/'))
+									{
+										$destination = $combinePath.$type.'/';
+									}
+									else
+									{
+										$destination = $combinePath;
+									}
+								}
+								break;
 
-            default         :   $destination = null;
-        }
+			default         :   $destination = null;
+		}
 
-        return $destination;
+		return $destination;
 
-    }
+	}
 
-    private function _getPrefix($case)
-    {
-        switch($case){
+	private function _getPrefix($case)
+	{
+		switch($case){
 
-            case 'compress' :   if (!empty($this->_options['compressprefix']))
-                                {
-                                    return $this->_options['compressprefix'];
-                                }
-                                else
-                                {
-                                    return 'min';
-                                }
-            case 'combine' :   if (!empty($this->_options['combineprefix']))
-                                {
-                                    return $this->_options['combineprefix'];
-                                }
-                                else
-                                {
-                                    return 'combined';
-                                }
+			case 'compress' :   if (!empty($this->_options['compressprefix']))
+								{
+									return $this->_options['compressprefix'];
+								}
+								else
+								{
+									return 'min';
+								}
+			case 'combine' :   if (!empty($this->_options['combineprefix']))
+								{
+									return $this->_options['combineprefix'];
+								}
+								else
+								{
+									return 'combined';
+								}
 
-        }
-        return '';
-    }
+		}
+		return '';
+	}
 	private function _getCompressorOptions($type)
 	{
 		$tmp = explode(';', $this->params->get('compressoptions'));
