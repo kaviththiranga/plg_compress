@@ -43,7 +43,7 @@
                             value="1">JYes</option>
                 </field>
                 <field name="compressoptions" type="textarea"
-                       default="REMOVE_COMMENTS=true; MIN_COLOR_CODES=true; LIMIT_LINE_LENGTH=true;overwrite=true"
+                       default=" MIN_COLOR_CODES=true; LIMIT_LINE_LENGTH=true;overwrite=true"
                        description="PLG_COMPRESS_FIELD_COMPRESSOPTIONS_DESC"
                        label="PLG_COMPRESS_FIELD_COMPRESSOPTIONS_LABEL"
                        cols="40"

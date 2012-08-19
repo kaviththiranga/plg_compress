@@ -76,7 +76,6 @@ class plgSystemCompress extends JPlugin
 		{
 			$this->_prepareAndCombineCss();
 		}
-
 	}
 
 	public function _compressJsFiles()
@@ -109,6 +108,11 @@ class plgSystemCompress extends JPlugin
 			{
 				$this->compressedJsFiles[$file]= $attributes;
 			}
+            // Compress Script declarations
+            if( isset ($this->scripts['text/javascript']))
+            {
+                $this->scripts['text/javascript'] = JMediaCompressor::compressString($this->scripts['text/javascript'], $this->_getCompressorOptions('js'));
+            }
 		}
 		$this->scriptFiles = $this->compressedJsFiles;
 	}
@@ -142,6 +146,12 @@ class plgSystemCompress extends JPlugin
 			{
 				$this->compressedCssFiles[$file]= $attributes;
 			}
+
+            // Compress Style declarations
+            if( isset ($this->styles['text/css']))
+            {
+                $this->styles['text/css'] = JMediaCompressor::compressString($this->styles['text/css'], $this->_getCompressorOptions('css'));
+            }
 		}
 		$this->stylesheets = $this->compressedCssFiles;
 	}
