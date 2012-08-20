@@ -126,8 +126,8 @@ class plgSystemCompress extends JPlugin
 									);
 			}
 
-			if ($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE) . $destinationFile)
-				&& (time() - $this->_options['cachetime'] < filemtime(dirname(JPATH_SITE) . $destinationFile)))
+			if ($this->_options['compresscache'] && file_exists(JPATH_SITE . DS . $destinationFile)
+				&& (time() - $this->_options['cachetime'] < filemtime(JPATH_SITE . DS . $destinationFile)))
 			{
 				$this->compressedJsFiles[$destinationFile] = $attributes;
 			}
@@ -176,8 +176,8 @@ class plgSystemCompress extends JPlugin
 			}
 
 
-			if ($this->_options['compresscache'] && file_exists(dirname(JPATH_SITE) . $destinationFile)
-				&& (time() - $this->_options['cachetime'] < filemtime(dirname(JPATH_SITE) . $destinationFile)))
+			if ($this->_options['compresscache'] && file_exists(JPATH_SITE . DS . $destinationFile)
+				&& (time() - $this->_options['cachetime'] < filemtime(JPATH_SITE . DS . $destinationFile)))
 			{
 				$this->compressedCssFiles[$destinationFile] = $attributes;
 			}
@@ -334,9 +334,12 @@ class plgSystemCompress extends JPlugin
 			$destinationFile = $this->_getSavePath('combine', 'js') . md5(serialize($files)) . '.' . $this->_getPrefix('combine') . '.js';
 		}
 
-
-		if ($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE) . $destinationFile)
-			&& (time() - $this->_options['cachetime'] < filemtime(dirname(JPATH_SITE) . $destinationFile)))
+		if ($this->_options['jscompression'])
+		{
+			$destinationFile = str_ireplace('.js', '.' . $this->_getPrefix('compress') . '.js', $destinationFile);
+		}
+		if ($this->_options['combinecache'] && file_exists(JPATH_SITE . DS . $destinationFile)
+			&& (time() - $this->_options['cachetime'] < filemtime(JPATH_SITE . DS . $destinationFile)))
 		{
 			return $destinationFile;
 		}
@@ -375,8 +378,12 @@ class plgSystemCompress extends JPlugin
 			$destinationFile = $this->_getSavePath('combine', 'css') . md5(serialize($files)) . '.' . $this->_getPrefix('combine') . '.css';
 		}
 
-		if ($this->_options['combinecache'] && file_exists(dirname(JPATH_SITE) . $destinationFile)
-			&& (time() - $this->_options['cachetime'] < filemtime(dirname(JPATH_SITE) . $destinationFile)))
+		if ($this->_options['csscompression'])
+		{
+			$destinationFile = str_ireplace('.css', '.' . $this->_getPrefix('compress') . '.css', $destinationFile);
+		}
+		if ($this->_options['combinecache'] && file_exists(JPATH_SITE . DS . $destinationFile)
+			&& (time() - $this->_options['cachetime'] < filemtime(JPATH_SITE . DS . $destinationFile)))
 		{
 			return $destinationFile;
 		}
