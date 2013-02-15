@@ -62,6 +62,7 @@ class plgSystemCompress extends JPlugin
 
 	function onBeforeCompileHead()
 	{
+        // comment
 		// Avoid for the backend
 		if (JFactory::getApplication()->isAdmin())
 		{
