@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 
 /**
  * Joomla! Assets Compress Plugin
- *
+ *ssd
  * @package     Joomla.Plugin
  * @subpackage  System.compress
  */
